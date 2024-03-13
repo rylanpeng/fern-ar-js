@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/fern-ar@0.0.6/dist/fernar-gesture.prod.js"></script> -->
+    <script src="../dist/fernar-gesture.prod.js" type="module"></script>
+  </head>
+  <body>
+    <script>
+      async function initializeScene() {
+        const jsonModelPath = "../model/model.json";
+        const binModelPath = "../model/model.weights.bin";
+
+        // Fetching JSON model file
+        const jsonResponse = await fetch(jsonModelPath);
+        const jsonModelFile = await jsonResponse.text();
+
+
+        // Fetching binary model file
+        const binResponse = await fetch(binModelPath);
+        const binModelFile = new Uint8Array(await binResponse.arrayBuffer());
+
+        console.log(`binModelFile: ${binModelFile}`);
+
+        // Constructing attribute string for fernar-gesture
+        const fernarGestureAttr = `modelJson: ${jsonModelFile}; modelBin: ${binModelFile}; drawLandmarker:true`;
+
+        // Setting attributes for a-scene
+        const scene = document.querySelector("a-scene");
+        scene.setAttribute("fernar-gesture", fernarGestureAttr);
+      }
+      initializeScene();
+    </script>
+    <a-scene>
+      <a-camera active="false" position="0 0 0"></a-camera>
+      <a-box
+        id="coolbox"
+        fernar-gesture-target="gesture: 0,1,2"
+        event-set__turnred="_event: fernar-gesture-event-0; material.color: red"
+        event-set__turnblue="_event: fernar-gesture-event-1; material.color: blue"
+        event-set__turngreen="_event: fernar-gesture-event-2; material.color: green"
+        color="yellow"
+        position="0 0 -10"
+      ></a-box>
+    </a-scene>
+  </body>
+</html>
