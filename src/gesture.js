@@ -4,8 +4,9 @@ class Gesture {
   constructor() {
     this.lastVideoTime = -1;
     this.results = undefined;
+    this.stopPredict = false;
   }
-  async init(modelJson, modelBin) {
+  async init() {
     try {
       const vision = await FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
@@ -20,25 +21,15 @@ class Gesture {
       });
 
       let modelFiles = [];
-      if (modelJson == "") {
-        let response = await fetch("../model/model.json");
-        modelFiles.push(new File([await response.text()], "model.json"));
-        response = await fetch("../model/model.weights.bin");
-        modelFiles.push(
-          new File(
-            [new Uint8Array(await response.arrayBuffer())],
-            "model.weights.bin"
-          )
-        );
-      } else {
-        modelFiles.push(new File([modelJson], "model.json"));
-        modelFiles.push(
-          new File(
-            [new Uint8Array(modelBin)],
-            JSON.parse(modelJson).weightsManifest[0].paths[0]
-          )
-        );
-      }
+      let response = await fetch("../model/model.json");
+      modelFiles.push(new File([await response.text()], "model.json"));
+      response = await fetch("../model/model.weights.bin");
+      modelFiles.push(
+        new File(
+          [new Uint8Array(await response.arrayBuffer())],
+          "model.weights.bin"
+        )
+      );
       this.model = await tf.loadLayersModel(tf.io.browserFiles(modelFiles));
       console.log("Model loaded successfully:", this.model);
     } catch (error) {
@@ -46,31 +37,46 @@ class Gesture {
     }
   }
   predict(video) {
-    this.videoWidth = video.offsetWidth;
-    this.videoHeight = video.offsetHeight;
+    if (!this.stopPredict) {
+      this.videoWidth = video.offsetWidth;
+      this.videoHeight = video.offsetHeight;
 
-    let startTimeMs = performance.now();
-    if (this.lastVideoTime !== video.currentTime) {
-      this.lastVideoTime = video.currentTime;
-      this.results = this.handLandmarker.detectForVideo(video, startTimeMs);
-    }
-    if (this.results.landmarks) {
-      if (this.results.landmarks.length > 0) {
-        const preProcessedLandmarkList = this._preProcessedLandmark();
-        if (preProcessedLandmarkList.length === 42) {
-          this._predict(preProcessedLandmarkList).then((prediction) => {
-            console.log("Predicted class index:", prediction);
-            this.result({
-              landmarks: this.results.landmarks,
-              gesture: prediction,
+      let startTimeMs = performance.now();
+      if (this.lastVideoTime !== video.currentTime) {
+        this.lastVideoTime = video.currentTime;
+        this.results = this.handLandmarker.detectForVideo(video, startTimeMs);
+      }
+      if (this.results.landmarks) {
+        if (this.results.landmarks.length > 0) {
+          const preProcessedLandmarkList = this._preProcessedLandmark();
+          if (preProcessedLandmarkList.length === 42) {
+            this._predict(preProcessedLandmarkList).then((prediction) => {
+              console.log("Predicted class index:", prediction);
+              this.result({
+                landmarks: this.results.landmarks,
+                gesture: prediction,
+              });
             });
-          });
+          }
         }
       }
     }
     window.requestAnimationFrame(() => {
       this.predict(video);
     });
+  }
+  async updateModel(modelJson, modelBin, binModelPath) {
+    this.stopPredict = true;
+    try {
+      let modelFiles = [];
+      modelFiles.push(new File([modelJson], "model.json"));
+      modelFiles.push(new File([new Uint8Array(modelBin)], binModelPath));
+      this.model = await tf.loadLayersModel(tf.io.browserFiles(modelFiles));
+      console.log("Model loaded successfully:", this.model);
+    } catch (error) {
+      console.error("Error loading model:", error);
+    }
+    this.stopPredict = false;
   }
   _preProcessedLandmark() {
     // calc_landmark_list
@@ -106,7 +112,6 @@ class Gesture {
     const max_value = Math.max(...flatLandmarkList.map(Math.abs));
     const normalize_ = (n) => n / max_value;
     const normalized_landmark_list = flatLandmarkList.map(normalize_);
-    // console.log(`normalized_landmark_list: ${normalized_landmark_list}`);
     return normalized_landmark_list;
   }
   async _predict(landmark_list) {

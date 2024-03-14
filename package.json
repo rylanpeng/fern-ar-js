@@ -1,6 +1,6 @@
 {
   "name": "fern-ar",
-  "version": "0.0.6",
+  "version": "0.0.21",
   "description": "augmented reality in web",
   "main": "dist/fernar-gesture.prod.js",
   "type": "module",

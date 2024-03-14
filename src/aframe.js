@@ -1,5 +1,7 @@
 import { Gesture } from "./gesture.js";
 import { DrawingUtils, HandLandmarker } from "@mediapipe/tasks-vision";
+let gestureRecognizer = null;
+let finishMLInit = false;
 AFRAME.registerSystem("fernar-gesture-system", {
   schema: {},
   init: function () {
@@ -24,9 +26,7 @@ AFRAME.registerSystem("fernar-gesture-system", {
     if (this.gestureEntityMap.has(+gesture)) {
       let entities = this.gestureEntityMap.get(+gesture);
       entities.forEach((entity, _) => {
-        console.log(
-          `emit fernar-gesture-event-${+gesture} to entity ${entity.name}`
-        );
+        console.log(`emit fernar-gesture-event-${+gesture}`);
         entity.emit(`fernar-gesture-event-${+gesture}`);
       });
     }
@@ -36,52 +36,38 @@ AFRAME.registerSystem("fernar-gesture-system", {
 AFRAME.registerComponent("fernar-gesture", {
   dependencies: ["fernar-gesture-system"],
   schema: {
-    modelJson: {
-      type: "string",
-      default: "",
-    },
-    modelBin: {
-      type: "array",
-      default: [],
-    },
     drawLandmarker: { type: "boolean", default: true },
   },
   init: function () {
-    console.log(`this.data.modelJson: ${this.data.modelJson}`);
-    console.log(`this.data.modelBin: ${this.data.modelBin}`);
-    this.gestureRecognizer = new Gesture();
-    this.count = 0;
-
-    this.canvasElement = document.createElement("canvas");
-    this.canvasElement.setAttribute("class", "output_canvas");
-    this.canvasElement.setAttribute(
-      "style",
-      "position: absolute; left: 0px; top: 0px;"
-    );
-    this.canvasCtx = this.canvasElement.getContext("2d");
-    this.el.sceneEl.parentNode.appendChild(this.canvasElement);
-    this.video = document.createElement("video");
-    this.video.setAttribute("autoplay", "");
-    this.video.setAttribute("muted", "");
-    this.video.setAttribute("playsinline", "");
-    this.video.setAttribute(
-      "style",
-      "position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; z-index: -2; object-fit: cover;"
-    );
-    this.el.sceneEl.parentNode.appendChild(this.video);
-
     this.el.sceneEl.addEventListener("renderstart", () => {
+      gestureRecognizer = new Gesture();
+      this.count = 0;
+
+      this.canvasElement = document.createElement("canvas");
+      this.canvasElement.setAttribute("class", "output_canvas");
+      this.canvasElement.setAttribute(
+        "style",
+        "position: absolute; left: 0px; top: 0px;"
+      );
+      this.canvasCtx = this.canvasElement.getContext("2d");
+      this.el.sceneEl.parentNode.appendChild(this.canvasElement);
+      this.video = document.createElement("video");
+      this.video.setAttribute("autoplay", "");
+      this.video.setAttribute("muted", "");
+      this.video.setAttribute("playsinline", "");
+      this.video.setAttribute(
+        "style",
+        "position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; z-index: -2; object-fit: cover;"
+      );
+      this.el.sceneEl.parentNode.appendChild(this.video);
       navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
         this.video.srcObject = stream;
-        this.video.addEventListener("loadeddata", async () => {
-          console.log(`loadeddata`);
-          await this.gestureRecognizer.init(
-            this.data.modelJson,
-            this.data.modelBin
-          );
-          this.gestureRecognizer.predict(this.video);
+        this.video.addEventListener("loadedmetadata", async () => {
+          await gestureRecognizer.init();
+          finishMLInit = true;
+          gestureRecognizer.predict(this.video);
         });
-        this.gestureRecognizer.result = ({ landmarks, gesture }) => {
+        gestureRecognizer.result = ({ landmarks, gesture }) => {
           if (this.data.drawLandmarker) {
             this._drawLandmarker(landmarks);
           }
@@ -140,3 +126,18 @@ AFRAME.registerComponent("fernar-gesture-target", {
   pause: function () {},
   play: function () {},
 });
+
+async function updateModel(modelJson, modelBin, binModelPath) {
+  await new Promise((resolve) => {
+    const checkFinish = () => {
+      if (finishMLInit) {
+        resolve();
+      } else {
+        setTimeout(checkFinish, 100);
+      }
+    };
+    checkFinish();
+  });
+  await gestureRecognizer.updateModel(modelJson, modelBin, binModelPath);
+}
+export { updateModel };
