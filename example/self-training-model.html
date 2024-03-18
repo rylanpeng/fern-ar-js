@@ -7,23 +7,35 @@
     <script src="../dist/fernar-gesture.prod.js"></script>
   </head>
   <body>
-    <a-scene fernar-gesture="drawLandmarker:true" embedded>
-      <a-camera active="true" position="0 0 0"></a-camera>
-      <a-sky color="#F5A285"></a-sky>
+    <script>
+      async function initializeScene() {
+        // const jsonModelPath = "../model/model.json";
+        // const binModelPath = "../model/model.weights.bin";
+        const jsonModelPath = "../old-model/model.json";
+        const binModelPath = "../old-model/model.weights.bin";
+
+        // Fetching JSON model file
+        const jsonResponse = await fetch(jsonModelPath);
+        const jsonModelFile = await jsonResponse.text();
+
+        // Fetching binary model file
+        const binResponse = await fetch(binModelPath);
+        const binModelFile = new Uint8Array(await binResponse.arrayBuffer());
+
+        await FERNAR.updateModel(jsonModelFile, binModelFile, binModelPath);
+      }
+      initializeScene();
+    </script>
+    <a-scene fernar-gesture>
+      <a-camera active="false" position="0 0 0"></a-camera>
       <a-box
         fernar-gesture-target="gesture: 0,1,2"
         event-set__turnred="_event: fernar-gesture-event-0; material.color: red"
         event-set__turnblue="_event: fernar-gesture-event-1; material.color: blue"
         event-set__turngreen="_event: fernar-gesture-event-2; material.color: green"
         color="yellow"
-        position="0 0 -5"
+        position="0 0 -10"
         rotation="0 -30 0"
-        animation="
-          property: rotation;
-          to: 0 360 0;
-          loop: true;
-          dur: 3000;
-          easing: linear"
       ></a-box>
     </a-scene>
   </body>

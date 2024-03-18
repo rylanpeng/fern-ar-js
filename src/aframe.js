@@ -111,7 +111,7 @@ AFRAME.registerComponent("fernar-gesture", {
           if (this.data.drawLandmarker) {
             this._drawLandmarker(landmarks);
           }
-          if (this.count == 3) {
+          if (this.count == 10) {
             this.el.sceneEl.systems["fernar-gesture-system"].notify(
               gesture,
               landmarks

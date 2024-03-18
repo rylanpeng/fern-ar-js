@@ -22,9 +22,9 @@ class Gesture {
 
       let modelFiles = [];
       // TODO: Need to change this later (probably github? many ways to resolve this)
-      let response = await fetch("https://cdn.jsdelivr.net/npm/fern-ar@0.0.21/model/model.json");
+      let response = await fetch("https://cdn.jsdelivr.net/npm/fern-ar@0.0.23/model/model.json");
       modelFiles.push(new File([await response.text()], "model.json"));
-      response = await fetch("https://cdn.jsdelivr.net/npm/fern-ar@0.0.21/model/model.weights.bin");
+      response = await fetch("https://cdn.jsdelivr.net/npm/fern-ar@0.0.23/model/model.weights.bin");
       modelFiles.push(
         new File(
           [new Uint8Array(await response.arrayBuffer())],

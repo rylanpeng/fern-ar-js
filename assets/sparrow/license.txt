@@ -1,0 +1,11 @@
+Model Information:
+* title:	Sparrow - Quirky Series
+* source:	https://sketchfab.com/3d-models/sparrow-quirky-series-289e7db66cfa45fbbe7624b8f48f6c8c
+* author:	Omabuarts Studio (https://sketchfab.com/omabuarts)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Sparrow - Quirky Series" (https://sketchfab.com/3d-models/sparrow-quirky-series-289e7db66cfa45fbbe7624b8f48f6c8c) by Omabuarts Studio (https://sketchfab.com/omabuarts) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
