@@ -3,8 +3,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fern-ar@0.0.21/dist/fernar-gesture.prod.js"></script>
-    <!-- <script src="../dist/fernar-gesture.prod.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/fern-ar@0.0.22/dist/fernar-gesture.prod.js"></script> -->
+    <script src="../dist/fernar-gesture.prod.js"></script>
   </head>
   <script>
     // document.addEventListener("DOMContentLoaded", function () {
@@ -24,8 +24,8 @@
     // });
   </script>
   <body>
-    <a-scene fernar-gesture="drawLandmarker:true">
-      <a-camera active="false" position="0 0 0"></a-camera>
+    <a-scene fernar-gesture="drawLandmarker:true" embedded>
+      <a-camera active="true" position="0 0 0"></a-camera>
       <a-box
         id="coolbox"
         fernar-gesture-target="gesture: 0,1,2"

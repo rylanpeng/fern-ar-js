@@ -21,9 +21,10 @@ class Gesture {
       });
 
       let modelFiles = [];
-      let response = await fetch("../model/model.json");
+      // TODO: Need to change this later (probably github? many ways to resolve this)
+      let response = await fetch("https://cdn.jsdelivr.net/npm/fern-ar@0.0.21/model/model.json");
       modelFiles.push(new File([await response.text()], "model.json"));
-      response = await fetch("../model/model.weights.bin");
+      response = await fetch("https://cdn.jsdelivr.net/npm/fern-ar@0.0.21/model/model.weights.bin");
       modelFiles.push(
         new File(
           [new Uint8Array(await response.arrayBuffer())],
@@ -38,9 +39,9 @@ class Gesture {
   }
   predict(video) {
     if (!this.stopPredict) {
-      this.videoWidth = video.offsetWidth;
-      this.videoHeight = video.offsetHeight;
-
+      this.videoWidth = video.width;
+      this.videoHeight = video.height;
+      
       let startTimeMs = performance.now();
       if (this.lastVideoTime !== video.currentTime) {
         this.lastVideoTime = video.currentTime;

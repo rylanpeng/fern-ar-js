@@ -1,0 +1,130 @@
+<!-- train-model/label.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <link rel="stylesheet" href="../styles.css" /> -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-layers"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-cpu"></script>
+
+    <script src="./label.js" type="module"></script>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+      #train-gesture-info {
+        position: absolute;
+        top: 20px;
+        left: 30px;
+        z-index: 9999;
+      }
+      #progress-container {
+        width: 100%;
+        background-color: #f0f0f0;
+        display: none;
+      }
+      #progress-bar {
+        width: 0%;
+        height: 30px;
+        background-color: #4caf50;
+        transition: width 0.3s ease;
+      }
+      #messages-container {
+        overflow-y: auto; 
+        height: 250px;
+      }
+
+      #messages-container::-webkit-scrollbar {
+        width: 0;
+      }
+    </style>
+    <title>Label Gestures</title>
+  </head>
+  <body>
+    <canvas
+      class="output_canvas"
+      id="output_canvas"
+      style="position: absolute; left: 0px; top: 0px"
+    ></canvas>
+    <video
+      id="webcam"
+      autoplay
+      muted
+      playsinline
+      style="
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+        object-fit: cover;
+      "
+    ></video>
+    <a-scene>
+      <a-camera position="80 20 100" look-controls wasd-controls></a-camera>
+    </a-scene>
+    <div class="controls-container" id="train-gesture-info">
+      <div class="left-middle">
+        <br /><br />
+        <h3>Step 1: Select local Training CSV File:</h3>
+        <input id="training-csv" type="file" accept=".csv" />
+        <h3>Step 2: Enter Gesture ID to train</h3>
+        <input id="gesture_id" type="text" placeholder="Enter Gesture ID" />
+        <br /><br />
+        <h3>
+          Step 3: Repeat clicking the 'Store Gesture' button while making the
+          post
+        </h3>
+        <h3>the web pages will store the gesture into CSV file</h3>
+        <input type="button" onclick="storeGesture()" value="Store Gesture" />
+        <br /><br />
+        <h3>
+          Step 4: Repeat doing Step 2 & Step 3 to label as many as you want
+        </h3>
+        <!-- Output message from JS -->
+      </div>
+      <div class="bottom-middle">
+        <h3>
+          Step 5: After labeling, you can download the new labeling CSV file or
+          train the model
+        </h3>
+        <input
+          id="trainGestureNum"
+          type="text"
+          placeholder="Enter Total Num of Gestures to train"
+        />
+        <br /><br />
+        <input type="button" onclick="downloadCsv()" value="Download CSV" />
+        <br /><br />
+        <input type="button" onclick="startTraining()" value="Start Training" />
+        <br /><br />
+        <div id="progress-container">
+          <div id="progress-bar"></div>
+        </div>
+        <br /><br />
+        <div id="messages-container" style="overflow-y: auto;">
+          <div id="messages"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
