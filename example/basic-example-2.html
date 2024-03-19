@@ -4,7 +4,7 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/fern-ar@0.0.23/dist/fernar-gesture.prod.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/fern-ar@latest/dist/fernar-gesture.prod.js"></script> -->
     <script src="../dist/fernar-gesture.prod.js"></script>
   </head>
   <script>
@@ -31,10 +31,14 @@
           loop: "once",
         });
       });
+      FERNAR.setDebugMode(true);
     });
   </script>
   <body>
-    <a-scene fernar-gesture="drawLandmarker:true" embedded>
+    <a-scene
+      fernar-gesture="drawLandmarker:true; threshold: 5; 
+                      planePosition: -6 2 -7; planeWidth: 5; planeHeight: 5"
+    >
       <a-assets>
         <img id="sky" src="../assets/sky.jpg" />
       </a-assets>

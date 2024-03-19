@@ -3,16 +3,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/fern-ar@0.0.22/dist/fernar-gesture.prod.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/fern-ar@latest/dist/fernar-gesture.prod.js"></script> -->
     <script src="../dist/fernar-gesture.prod.js"></script>
   </head>
   <body>
     <script>
       async function initializeScene() {
-        // const jsonModelPath = "../model/model.json";
-        // const binModelPath = "../model/model.weights.bin";
-        const jsonModelPath = "../old-model/model.json";
-        const binModelPath = "../old-model/model.weights.bin";
+        const jsonModelPath = "../model/model.json";
+        const binModelPath = "../model/model.weights.bin";
+        // const jsonModelPath = "../old-model/model.json";
+        // const binModelPath = "../old-model/model.weights.bin";
 
         // Fetching JSON model file
         const jsonResponse = await fetch(jsonModelPath);
@@ -23,6 +23,7 @@
         const binModelFile = new Uint8Array(await binResponse.arrayBuffer());
 
         await FERNAR.updateModel(jsonModelFile, binModelFile, binModelPath);
+        FERNAR.setDebugMode(true);
       }
       initializeScene();
     </script>

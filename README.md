@@ -3,7 +3,7 @@
 <p align="center"><img src="./assets/sparrow-recording.gif" height="250" style="margin-right: 20px;">
     <img src="./assets/box-recording.gif" height="250" style="margin-left: 20px;"></p>
 
-<p align="center"><b>Web Augmented Reality A-Frame library. Currently supports gesture recognition</b></p>
+<p align="center"><b>Web Augmented Reality. A-Frame Component. Currently supports gesture recognition</b></p>
 
 <p align="center">
   <a href="https://npmjs.org/package/fern-ar">
@@ -24,10 +24,10 @@
 
 :pushpin: **Gesture Recognition A-Frame Component**: Capable of recognizing 18 gestures.
 
-:pushpin: **Custom Gesture Training**: Train personalized models on this website [], then pass them to the FernAR engine for customized gesture recognition.
+:pushpin: **Custom Gesture Training**: Train personalized models and pass them to the FernAR engine for customized gesture recognition.
 
 ## **Gesture Recognition**:
-Place the library into a scene to initiate an AR scene using the device camera. This allows you to use gestures for controlling A-Frame elements. If the library's predefined gestures are insufficient, you can explore the `Train Your Own Model` section to train a custom model.
+Place the library into a scene to initiate an AR scene using the device camera. This allows you to use gestures for controlling A-Frame elements. If the library's predefined gestures are insufficient, you can explore the [Train Your Own Model](#train-your-own-model) section to train a custom model.
 
 ## **Simple Example**:
 
@@ -58,17 +58,17 @@ Live demo: [Enter AR](https://rylanpeng.github.io/fern-ar-js/gesture-recognition
 </html>
 ```
 
-### **Step 1: Add fernar-js library**
+### **Step 1: Add fern-ar library**
 
 #### CDN 
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/fern-ar@1.0.0/dist/fernar-gesture.prod.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fern-ar@latest/dist/fernar-gesture.prod.js"></script>
 ```
 
 ####  NPM 
 ```cmd
-$ npm install fern-ar@1.0.0
+$ npm install fern-ar@latest
 ```
 
 ### **Step 2: Add `fernar-gesture` to `<a-scene>`**
@@ -99,12 +99,20 @@ async function initializeScene() {
 initializeScene();
 ```
 
+#### Note 3: Use `FERNAR.setDebugMode` to enable debug messages
+
+```js
+FERNAR.setDebugMode(true);
+```
+
 #### Note 2: Properties for `fernar-gesture`
 
 | Property | Type | default |
 | -------- | -------- | -------- |
 | drawLandmarker | boolean | true |
-| planePosition | array | [-6 3 -7] |
+| threshold | int | 10 |
+| confidence | number | 0.7 |
+| planePosition | array | -6 3 -7 |
 | planeWidth | int | 5 |
 | planeHeight | int | 5 |
 
@@ -144,10 +152,14 @@ After labeling, you can either click the `Download CSV File` button to download 
 Once the training is complete, the web pages will automatically save the model in your device's Download folder. You should find two files: model.json and model.weight.bin.
 
 ## **Contributing**
-Any support or questions are welcome! This is just a small library I'm going to use on my AR platform, if you find any bug or improvement please feel free to open issues and let's discuss!
+
+Any support or questions are welcome! If you encounter any bugs or have suggestions for improvements, please feel free to open issues, and let's discuss them together.
 
 ## **Reference**:
-- The gesture recognition heavily relies on the repo [hand-gesture-recognition-using-mediapipe](https://github.com/Kazuhito00/hand-gesture-recognition-using-mediapipe)
-- A-Frame: https://github.com/aframevr/aframe
-- MediaPipe: https://developers.google.com/mediapipe/solutions/vision/hand_landmarker
-- Mind AR: https://github.com/hiukim/mind-ar-js
+:star: The gesture recognition heavily relies on the repo [hand-gesture-recognition-using-mediapipe](https://github.com/Kazuhito00/hand-gesture-recognition-using-mediapipe)
+
+:star: A-Frame: https://github.com/aframevr/aframe
+
+:star: MediaPipe: https://developers.google.com/mediapipe/solutions/vision/hand_landmarker
+
+:star: Mind AR: https://github.com/hiukim/mind-ar-js

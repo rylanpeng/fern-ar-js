@@ -15,7 +15,7 @@ const createHandLandmarker = async () => {
       delegate: "GPU",
     },
     runningMode: "VIDEO",
-    numHands: 2,
+    numHands: 1,
   });
 };
 createHandLandmarker();
@@ -79,10 +79,10 @@ async function predictWebcam() {
 
     for (const landmarks of results.landmarks) {
       drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
-        color: "#00FF00",
-        lineWidth: 5,
+        color: "#C273E5",
+        lineWidth: 7,
       });
-      drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
+      drawLandmarks(canvasCtx, landmarks, { color: "#7E369E", lineWidth: 1 });
     }
   }
   canvasCtx.restore();

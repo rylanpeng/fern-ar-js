@@ -21,10 +21,13 @@ class Gesture {
       });
 
       let modelFiles = [];
-      // TODO: Need to change this later (probably github? many ways to resolve this)
-      let response = await fetch("https://cdn.jsdelivr.net/npm/fern-ar@0.0.23/model/model.json");
+      let response = await fetch(
+        "https://cdn.jsdelivr.net/npm/fern-ar@latest/model/model.json"
+      );
       modelFiles.push(new File([await response.text()], "model.json"));
-      response = await fetch("https://cdn.jsdelivr.net/npm/fern-ar@0.0.23/model/model.weights.bin");
+      response = await fetch(
+        "https://cdn.jsdelivr.net/npm/fern-ar@latest/model/model.weights.bin"
+      );
       modelFiles.push(
         new File(
           [new Uint8Array(await response.arrayBuffer())],
@@ -41,26 +44,39 @@ class Gesture {
     if (!this.stopPredict) {
       this.videoWidth = video.width;
       this.videoHeight = video.height;
-      
+
       let startTimeMs = performance.now();
       if (this.lastVideoTime !== video.currentTime) {
         this.lastVideoTime = video.currentTime;
         this.results = this.handLandmarker.detectForVideo(video, startTimeMs);
       }
-      if (this.results.landmarks) {
-        if (this.results.landmarks.length > 0) {
-          const preProcessedLandmarkList = this._preProcessedLandmark();
-          if (preProcessedLandmarkList.length === 42) {
-            this._predict(preProcessedLandmarkList).then((prediction) => {
-              console.log("Predicted class index:", prediction);
-              this.result({
-                landmarks: this.results.landmarks,
-                gesture: prediction,
-              });
-            });
-          }
+      const resultHands = this.results.handedness;
+      const resultLandmarks = this.results.landmarks;
+      const resultGestures = [];
+      const promises = [];
+      for (let i = 0; i < this.results.landmarks.length; i++) {
+        const preProcessedLandmarkList = this._preProcessedLandmark(
+          this.results.landmarks[i]
+        );
+        if (preProcessedLandmarkList.length === 42) {
+          promises.push(
+            this._predict(preProcessedLandmarkList).then(({prediction, confidence}) => {
+              resultGestures.push({prediction: prediction, confidence: confidence});
+            })
+          );
         }
       }
+      Promise.all(promises)
+        .then(() => {
+          this.result({
+            hands: resultHands,
+            landmarks: resultLandmarks,
+            gestures: resultGestures,
+          });
+        })
+        .catch((error) => {
+          console.error("Error occurred during prediction:", error);
+        });
     }
     window.requestAnimationFrame(() => {
       this.predict(video);
@@ -79,21 +95,19 @@ class Gesture {
     }
     this.stopPredict = false;
   }
-  _preProcessedLandmark() {
+  _preProcessedLandmark(landmarks) {
     // calc_landmark_list
     const landmark_list = [];
-    for (const landmarks of this.results.landmarks) {
-      for (const landmark of landmarks) {
-        const landmark_x = Math.min(
-          Math.floor(landmark.x * this.videoWidth),
-          this.videoWidth - 1
-        );
-        const landmark_y = Math.min(
-          Math.floor(landmark.y * this.videoHeight),
-          this.videoHeight - 1
-        );
-        landmark_list.push([landmark_x, landmark_y]);
-      }
+    for (const landmark of landmarks) {
+      const landmark_x = Math.min(
+        Math.floor(landmark.x * this.videoWidth),
+        this.videoWidth - 1
+      );
+      const landmark_y = Math.min(
+        Math.floor(landmark.y * this.videoHeight),
+        this.videoHeight - 1
+      );
+      landmark_list.push([landmark_x, landmark_y]);
     }
 
     // pre_process_landmark
@@ -123,8 +137,9 @@ class Gesture {
     );
     const result = this.model.predict(inputTensor);
     const resultData = await result.data();
-    const resultIndex = resultData.indexOf(Math.max(...resultData));
-    return resultIndex;
+    const maxProbability = Math.max(...resultData);
+    const resultIndex = resultData.indexOf(maxProbability);
+    return {prediction: resultIndex, confidence: maxProbability};
   }
 }
 export { Gesture };

@@ -1,7 +1,7 @@
 {
   "name": "fern-ar",
-  "version": "0.0.23",
-  "description": "augmented reality in web",
+  "version": "0.0.24",
+  "description": "augmented reality in web. A-Frame. Gesture Recognition",
   "main": "dist/fernar-gesture.prod.js",
   "type": "module",
   "scripts": {
