@@ -99,13 +99,13 @@ async function initializeScene() {
 initializeScene();
 ```
 
-#### Note 3: Use `FERNAR.setDebugMode` to enable debug messages
+#### Note 2: Use `FERNAR.setDebugMode` to enable debug messages
 
 ```js
 FERNAR.setDebugMode(true);
 ```
 
-#### Note 2: Properties for `fernar-gesture`
+#### Note 3: Properties for `fernar-gesture`
 
 | Property | Type | default |
 | -------- | -------- | -------- |
@@ -145,7 +145,7 @@ entity.addEventListener("fernar-gesture-event-0", function (event) {
 
 ## **Train Your Own Model**:
 
-Refer to this Git page [Train Model](https://rylanpeng.github.io/fern-ar-js/train-model/label.html) to train a customized model. Provide a CSV file (you can use the one in **label/label.csv**), enter the new gesture ID you want to recognize, and perferm the gesture in front of the camera. The web pages will record the gesture landmark every time you click `Store Gesture`. 
+Refer to this Git page [Train Model](https://rylanpeng.github.io/fern-ar-js/train-model/label.html) to train a customized model. Provide a CSV file (you can use the one in **data/label.csv**), enter the new gesture ID you want to recognize, and perferm the gesture in front of the camera. The web pages will record the gesture landmark every time you click `Store Gesture`. 
 
 After labeling, you can either click the `Download CSV File` button to download the new labeling CSV file or specify the total number of gestures you want to train (ex: gestures 0,1,2,3 would be total 4 gestures) and click `Start Training` to train the model using the CSV file you just labeled.
 
